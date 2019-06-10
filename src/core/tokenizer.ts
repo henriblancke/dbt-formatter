@@ -1,8 +1,7 @@
-import {isEmpty, escapeRegExp} from "lodash";
-import tokenTypes from '../constants/token-types';
-import {dbtStartMarkers, dbtEndMarkers} from "../constants/presets";
-import {Config, Token, RegexDefinition} from "../constants/interfaces";
-
+import { isEmpty, escapeRegExp } from 'lodash'
+import tokenTypes from '../constants/token-types'
+import { dbtStartMarkers, dbtEndMarkers } from '../constants/presets'
+import { Config, Token, RegexDefinition } from '../constants/interfaces'
 
 export default class Tokenizer {
   /**
@@ -19,20 +18,19 @@ export default class Tokenizer {
    *  @param {String[]} cfg.specialWordChars Special chars that can be found inside of words, like @ and #
    */
 
-
-  cfg: Config;
+  cfg: Config
 
   constructor(cfg: Config) {
-    this.cfg = cfg;
+    this.cfg = cfg
   }
 
   static escapeParen(paren: string) {
     if (paren.length === 1) {
       // single punctuation character
-      return escapeRegExp(paren);
+      return escapeRegExp(paren)
     } else {
       // longer word
-      return "\\b" + paren + "\\b";
+      return '\\b' + paren + '\\b'
     }
   }
 
@@ -44,48 +42,48 @@ export default class Tokenizer {
   // 5. national character quoted string using N'' or N\' to escape
   static createStringPattern(types: string[]): string {
     const patterns: { [k: string]: string } = {
-      "``": "((`[^`]*($|`))+)",
-      "[]": "((\\[[^\\]]*($|\\]))(\\][^\\]]*($|\\]))*)",
-      "\"\"": "((\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*(\"|$))+)",
+      '``': '((`[^`]*($|`))+)',
+      '[]': '((\\[[^\\]]*($|\\]))(\\][^\\]]*($|\\]))*)',
+      '""': '(("[^"\\\\]*(?:\\\\.[^"\\\\]*)*("|$))+)',
       "''": "(('[^'\\\\]*(?:\\\\.[^'\\\\]*)*('|$))+)",
       "N''": "((N'[^N'\\\\]*(?:\\\\.[^N'\\\\]*)*('|$))+)"
-    };
+    }
 
-    return types.map(t => patterns[t]).join("|");
+    return types.map(t => patterns[t]).join('|')
   }
 
   static createLineCommentRegex(ids: string[]) {
-    return new RegExp(`^((?:${ids.map(id => escapeRegExp(id)).join("|")}).*?(?:\n|$))`);
+    return new RegExp(`^((?:${ids.map(id => escapeRegExp(id)).join('|')}).*?(?:\n|$))`)
   }
 
   static createMultiWordRegex(words: string[]) {
-    const pattern = words.join("|").replace(/ /g, "\\s+");
-    return new RegExp(`^(${pattern})\\b`, "i");
+    const pattern = words.join('|').replace(/ /g, '\\s+')
+    return new RegExp(`^(${pattern})\\b`, 'i')
   }
 
   static createWordRegex(chars: string[]) {
-    return new RegExp(`^([\\w${chars.join("")}]+)`);
+    return new RegExp(`^([\\w${chars.join('')}]+)`)
   }
 
   static createStringRegex(types: string[]) {
-    return new RegExp("^(" + Tokenizer.createStringPattern(types) + ")");
+    return new RegExp('^(' + Tokenizer.createStringPattern(types) + ')')
   }
 
   static createParenRegex(parens: string[]) {
-    return new RegExp("^(" + parens.map(p => Tokenizer.escapeParen(p)).join("|") + ")", "i");
+    return new RegExp('^(' + parens.map(p => Tokenizer.escapeParen(p)).join('|') + ')', 'i')
   }
 
   static createPlaceholderRegex(types: string[], pattern: string) {
     if (isEmpty(types)) {
-      return /.^/;
+      return /.^/
     }
 
-    const typesRegex = types.map(escapeRegExp).join("|");
-    return new RegExp(`^((?:${typesRegex})(?:${pattern}))`);
+    const typesRegex = types.map(escapeRegExp).join('|')
+    return new RegExp(`^((?:${typesRegex})(?:${pattern}))`)
   }
 
-  static getEscapedPlaceholderKey({key, quoteChar}: { key: string, quoteChar: string }) {
-    return key.replace(new RegExp(escapeRegExp("\\") + quoteChar, "g"), quoteChar);
+  static getEscapedPlaceholderKey({ key, quoteChar }: { key: string; quoteChar: string }) {
+    return key.replace(new RegExp(escapeRegExp('\\') + quoteChar, 'g'), quoteChar)
   }
 
   /**
@@ -98,49 +96,49 @@ export default class Tokenizer {
    *  @return {String} token.value
    */
   tokenize(input: string) {
-    let token: Token = {type: '', value: ''};
-    const tokens: Token[] = [];
+    let token: Token = { type: '', value: '' }
+    const tokens: Token[] = []
 
     // Keep processing the string until it is empty
     while (input.length) {
       // Get the next token
-      const tmp = this.getNextToken(input, token);
+      const tmp = this.getNextToken(input, token)
 
       if (tmp) {
-        token = tmp as Token;
-        input = input.substring(token.value.length);
-        tokens.push(token);
+        token = tmp as Token
+        input = input.substring(token.value.length)
+        tokens.push(token)
       }
     }
-    return tokens;
+    return tokens
   }
 
   getNextToken(input: string, prev: Token): Token | boolean {
-    const regexes = this.getRegexes(input, prev);
-    const sorted = Object.keys(regexes).sort();
+    const regexes = this.getRegexes(input, prev)
+    const sorted = Object.keys(regexes).sort()
 
-    let result: Token | boolean = false;
+    let result: Token | boolean = false
     for (const id in sorted) {
-      const definition = regexes[id];
-      result = Tokenizer.matchRegex(definition);
+      const definition = regexes[id]
+      result = Tokenizer.matchRegex(definition)
       if (result) {
-        break;
+        break
       }
     }
 
-    return result;
+    return result
   }
 
   static matchRegex(df: RegexDefinition): Token | boolean {
-    const matches = df.input.match(df.regex);
+    const matches = df.input.match(df.regex)
     if (matches && matches.index === 0) {
       return {
         type: df.type,
         value: matches[0],
-        ...df.parseFunc && {key: df.parseFunc(matches[0])}
-      };
+        ...(df.parseFunc && { key: df.parseFunc(matches[0]) })
+      }
     }
-    return false;
+    return false
   }
 
   getRegexes(input: string, prev: Token): { [n: number]: RegexDefinition } {
@@ -160,13 +158,13 @@ export default class Tokenizer {
       2: {
         input,
         type: tokenTypes.DBT_START_TEMPLATE,
-        regex: /\s?\{\s?\%/,
+        regex: /\s?\{\s?\%\-?/,
         description: 'Finds start of a dbt/jinja template/macro.'
       },
       3: {
         input,
         type: tokenTypes.DBT_END_TEMPLATE,
-        regex: /\%\s?\}/,
+        regex: /\-?\%\s?\}/,
         description: 'Finds end of a dbt/jinja template/macro.'
       },
       4: {
@@ -214,24 +212,28 @@ export default class Tokenizer {
       12: {
         input,
         type: tokenTypes.PLACEHOLDER,
-        regex: Tokenizer.createPlaceholderRegex(this.cfg.namedPlaceholderTypes, "[a-zA-Z0-9._$]+"),
+        regex: Tokenizer.createPlaceholderRegex(this.cfg.namedPlaceholderTypes, '[a-zA-Z0-9._$]+'),
         parseFunc: v => v.slice(1),
         description: 'Indent named placeholder token'
       },
       13: {
         input,
         type: tokenTypes.PLACEHOLDER,
-        regex: Tokenizer.createPlaceholderRegex(this.cfg.namedPlaceholderTypes, Tokenizer.createStringPattern(this.cfg.stringTypes)),
-        parseFunc: v => Tokenizer.getEscapedPlaceholderKey({
-          key: v.slice(2, -1),
-          quoteChar: v.slice(-1)
-        }),
+        regex: Tokenizer.createPlaceholderRegex(
+          this.cfg.namedPlaceholderTypes,
+          Tokenizer.createStringPattern(this.cfg.stringTypes)
+        ),
+        parseFunc: v =>
+          Tokenizer.getEscapedPlaceholderKey({
+            key: v.slice(2, -1),
+            quoteChar: v.slice(-1)
+          }),
         description: 'String named placeholder token'
       },
       14: {
         input,
         type: tokenTypes.PLACEHOLDER,
-        regex: Tokenizer.createPlaceholderRegex(this.cfg.indexedPlaceholderTypes, "[0-9]*"),
+        regex: Tokenizer.createPlaceholderRegex(this.cfg.indexedPlaceholderTypes, '[0-9]*'),
         parseFunc: v => v.slice(1),
         description: 'Index placeholder token'
       },
@@ -247,7 +249,7 @@ export default class Tokenizer {
           input,
           prev,
           Tokenizer.createMultiWordRegex(this.cfg.reservedTopLevelWords)
-        ),
+        )
       },
       17: {
         input,
@@ -276,17 +278,16 @@ export default class Tokenizer {
         input,
         type: tokenTypes.OPERATOR,
         regex: /^(!=|<>|==|<=|>=|!<|!>|\|\||::|->>|->|~~\*|~~|!~~\*|!~~|~\*|!~\*|!~|.)/
-      },
+      }
     }
   }
 
   static getReservedWordToken(input: string, prev: Token, regex: RegExp) {
     // A reserved word cannot be preceded by a "."
     // this makes it so in "mytable.from", "from" is not considered a reserved word
-    if (prev && prev.value && prev.value === ".") {
-      return /.^/;
+    if (prev && prev.value && prev.value === '.') {
+      return /.^/
     }
-    return regex;
+    return regex
   }
-
 }
