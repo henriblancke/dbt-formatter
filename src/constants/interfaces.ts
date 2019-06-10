@@ -1,6 +1,7 @@
 export interface Options {
   sql: string
   indent: number
+  upper?: boolean
 }
 
 export interface Config {
