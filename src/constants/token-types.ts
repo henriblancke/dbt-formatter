@@ -17,5 +17,5 @@ export default {
   LINE_COMMENT: 'line-comment',
   BLOCK_COMMENT: 'block-comment',
   NUMBER: 'number',
-  PLACEHOLDER: 'placeholder'
+  PLACEHOLDER: 'placeholder',
 };

@@ -1,7 +1,7 @@
-import { last, repeat } from 'lodash'
+import { last, repeat } from 'lodash';
 
-const INDENT_TYPE_TOP_LEVEL = 'top-level'
-const INDENT_TYPE_BLOCK_LEVEL = 'block-level'
+const INDENT_TYPE_TOP_LEVEL = 'top-level';
+const INDENT_TYPE_BLOCK_LEVEL = 'block-level';
 
 /**
  * Manages indentation levels.
@@ -16,22 +16,22 @@ export default class Indentation {
    * @param {String} indent Indent value, default is "  " (2 spaces)
    */
 
-  indent: string = ''
-  indentTypes: string[] = []
+  indent: string = '';
+  indentTypes: string[] = [];
 
   constructor(indent: number) {
-    this.indent = ' '.repeat(indent)
+    this.indent = ' '.repeat(indent);
   }
 
   /**
    * Resets indentation.
    */
   reset() {
-    this.indentTypes = []
+    this.indentTypes = [];
   }
 
   count() {
-    return this.indentTypes.length
+    return this.indentTypes.length;
   }
 
   /**
@@ -39,21 +39,21 @@ export default class Indentation {
    * @return {String}
    */
   getIndent() {
-    return repeat(this.indent, this.indentTypes.length)
+    return repeat(this.indent, this.indentTypes.length);
   }
 
   /**
    * Increases indentation by one top-level indent.
    */
   increaseToplevel() {
-    this.indentTypes.push(INDENT_TYPE_TOP_LEVEL)
+    this.indentTypes.push(INDENT_TYPE_TOP_LEVEL);
   }
 
   /**
    * Increases indentation by one block-level indent.
    */
   increaseBlockLevel() {
-    this.indentTypes.push(INDENT_TYPE_BLOCK_LEVEL)
+    this.indentTypes.push(INDENT_TYPE_BLOCK_LEVEL);
   }
 
   /**
@@ -62,7 +62,7 @@ export default class Indentation {
    */
   decreaseTopLevel() {
     if (last(this.indentTypes) === INDENT_TYPE_TOP_LEVEL) {
-      this.indentTypes.pop()
+      this.indentTypes.pop();
     }
   }
 
@@ -73,9 +73,9 @@ export default class Indentation {
    */
   decreaseBlockLevel() {
     while (this.indentTypes.length > 0) {
-      const type = this.indentTypes.pop()
+      const type = this.indentTypes.pop();
       if (type !== INDENT_TYPE_TOP_LEVEL) {
-        break
+        break;
       }
     }
   }

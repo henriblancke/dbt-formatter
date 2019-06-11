@@ -15,7 +15,7 @@ function getConfiguration(opt: Options): Config {
     indexedPlaceholderTypes: presets['indexedPlaceholderTypes'][identifier],
     namedPlaceholderTypes: presets['namedPlaceholderTypes'][identifier],
     lineCommentTypes: presets['lineCommentTypes'][identifier],
-    specialWordChars: presets['specialWordChars'][identifier]
+    specialWordChars: presets['specialWordChars'][identifier],
   };
 }
 
@@ -35,5 +35,5 @@ export default {
     const config = getConfiguration(opt);
     const tokens = new Tokenizer(config).tokenize(query);
     return new Formatter(opt).format(tokens);
-  }
+  },
 };

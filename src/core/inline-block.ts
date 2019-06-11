@@ -1,10 +1,10 @@
-import tokenTypes from '../constants/token-types'
-import { Token } from '../constants/interfaces'
+import tokenTypes from '../constants/token-types';
+import { Token } from '../constants/interfaces';
 
-const INLINE_MAX_LENGTH = 50
+const INLINE_MAX_LENGTH = 50;
 
 export default class InlineBlock {
-  level: number = 0
+  level: number = 0;
 
   /**
    * Begins inline block when lookahead through upcoming tokens determines
@@ -14,11 +14,11 @@ export default class InlineBlock {
    */
   beginIfPossible(tokens: Token[], index: number) {
     if (this.level === 0 && this.isInlineBlock(tokens, index)) {
-      this.level = 1
+      this.level = 1;
     } else if (this.level > 0) {
-      this.level++
+      this.level++;
     } else {
-      this.level = 0
+      this.level = 0;
     }
   }
 
@@ -27,7 +27,7 @@ export default class InlineBlock {
    * There might be several nested ones.
    */
   end() {
-    this.level--
+    this.level--;
   }
 
   /**
@@ -35,37 +35,37 @@ export default class InlineBlock {
    * @return {Boolean}
    */
   isActive() {
-    return this.level > 0
+    return this.level > 0;
   }
 
   // Check if this should be an inline parentheses block
   // Examples are "NOW()", "COUNT(*)", "int(10)", key(`somecolumn`), DECIMAL(7,2)
   isInlineBlock(tokens: Token[], index: number) {
-    let level = 0
-    let length = 0
+    let level = 0;
+    let length = 0;
 
     for (let i = index; i < tokens.length; i++) {
-      const token = tokens[i]
-      length += token.value.length
+      const token = tokens[i];
+      length += token.value.length;
 
       if (length > INLINE_MAX_LENGTH) {
-        return false
+        return false;
       }
 
       if (token.type === tokenTypes.OPEN_PAREN) {
-        level++
+        level++;
       } else if (token.type === tokenTypes.CLOSE_PAREN) {
-        level--
+        level--;
         if (level === 0) {
-          return true
+          return true;
         }
       }
 
       if (InlineBlock.isForbiddenToken(token)) {
-        return false
+        return false;
       }
     }
-    return false
+    return false;
   }
 
   // Reserved words that cause newlines, comments and semicolons
@@ -76,6 +76,6 @@ export default class InlineBlock {
       type === tokenTypes.RESERVED_NEWLINE ||
       type === tokenTypes.BLOCK_COMMENT ||
       value === ';'
-    )
+    );
   }
 }
