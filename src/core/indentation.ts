@@ -30,6 +30,10 @@ export default class Indentation {
     this.indentTypes = []
   }
 
+  count() {
+    return this.indentTypes.length
+  }
+
   /**
    * Returns current indentation string.
    * @return {String}

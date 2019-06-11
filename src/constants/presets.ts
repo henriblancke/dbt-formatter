@@ -1,14 +1,25 @@
 import { Presets } from './interfaces'
 
 export const formatters: string[] = ['default']
-export const dbtStartMarkers: string[] = ['block', 'filter', 'for', 'if', 'macro', 'raw']
+export const dbtNoNewline: string[] = ['set']
+export const dbtStartMarkers: string[] = [
+  'set',
+  'block',
+  'filter',
+  'for',
+  'if',
+  'macro',
+  'raw',
+  'call'
+]
 export const dbtEndMarkers: string[] = [
   'endblock',
   'endfilter',
   'endfor',
   'endif',
   'endmacro',
-  'endraw'
+  'endraw',
+  'endcall'
 ]
 
 export const presets: Presets = {
@@ -437,7 +448,7 @@ export const presets: Presets = {
     default: ['@', ':']
   },
   lineCommentTypes: {
-    default: ['#', '--']
+    default: ['#', '--', '{#', '#}']
   },
   specialWordChars: {
     default: ['::']
