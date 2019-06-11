@@ -159,9 +159,14 @@ export default class Formatter {
     }
 
     // If the next token is a select statement add 2 lines.
+    // if the next token is a template start token add 2 lines.
     const condition =
-      nextToken.type === tokenTypes.RESERVED_TOPLEVEL && nextToken.value.toLowerCase() === 'select'
+      (nextToken.type === tokenTypes.RESERVED_TOPLEVEL &&
+        nextToken.value.toLowerCase() === 'select') ||
+      nextToken.type === tokenTypes.DBT_START_TEMPLATE
     const lines = condition ? 2 : 1
+
+    if (condition) this.indentation.reset()
 
     return this.addNewline(query, lines)
   }
