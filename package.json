@@ -1,8 +1,13 @@
 {
   "name": "dbt-formatter",
   "version": "1.0.0",
-  "description": "",
-  "keywords": [],
+  "description": "DBT jinja/sql formatter",
+  "keywords": [
+    "dbt",
+    "formatter",
+    "jinja",
+    "sql"
+  ],
   "main": "dist/dbt-formatter.umd.js",
   "module": "dist/dbt-formatter.es5.js",
   "typings": "dist/types/dbt-formatter.d.ts",
@@ -12,9 +17,13 @@
   "author": "Henri Blancke <blanckehenri@gmail.com>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/henriblancke/dbt-formatter.git"
   },
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/henriblancke/dbt-formatter/issues"
+  },
+  "homepage": "https://github.com/henriblancke/dbt-formatter#readme",
   "engines": {
     "node": ">=6.0.0"
   },

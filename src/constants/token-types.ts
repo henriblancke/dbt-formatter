@@ -18,4 +18,4 @@ export default {
   BLOCK_COMMENT: 'block-comment',
   NUMBER: 'number',
   PLACEHOLDER: 'placeholder'
-}
+};
