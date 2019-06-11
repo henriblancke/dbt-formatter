@@ -25,6 +25,6 @@
         "trace"
       ]
     },
-    "semicolon": "always"
+    "semicolon": [true, "always"]
   }
 }
