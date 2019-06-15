@@ -1,6 +1,6 @@
 import { isEmpty, escapeRegExp } from 'lodash';
 import tokenTypes from '../constants/token-types';
-import { dbtStartMarkers, dbtEndMarkers } from '../constants/presets';
+import { DbtConfig } from '../constants/presets';
 import { Config, Token, RegexDefinition } from '../constants/interfaces';
 
 export default class Tokenizer {
@@ -170,13 +170,13 @@ export default class Tokenizer {
       4: {
         input,
         type: tokenTypes.DBT_START_MARKERS,
-        regex: Tokenizer.createMultiWordRegex(dbtStartMarkers),
+        regex: Tokenizer.createMultiWordRegex(DbtConfig.startMarkers),
         description: 'Finds start marker words in template/macro.',
       },
       5: {
         input,
         type: tokenTypes.DBT_END_MARKERS,
-        regex: Tokenizer.createMultiWordRegex(dbtEndMarkers),
+        regex: Tokenizer.createMultiWordRegex(DbtConfig.endMarkers),
         description: 'Finds end marker words in template/macro.',
       },
       6: {

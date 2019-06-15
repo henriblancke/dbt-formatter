@@ -2,7 +2,7 @@ import { trimEnd } from 'lodash';
 import Indentation from './indentation';
 import InlineBlock from './inline-block';
 import tokenTypes from '../constants/token-types';
-import { dbtNoNewline } from '../constants/presets';
+import { DbtConfig } from '../constants/presets';
 import { Options, Token } from '../constants/interfaces';
 
 // Whitespace assumptions:
@@ -158,19 +158,23 @@ export default class Formatter {
 
     // If the next token is a reserved word (as, when,...) don't add
     // a new line.
-    if (nextToken.type === tokenTypes.RESERVED) {
+    const noNewLine =
+      nextToken.type === tokenTypes.RESERVED ||
+      DbtConfig.dbtControl.includes(nextToken.value.toLowerCase());
+    if (noNewLine) {
       return query;
     }
 
-    // If the next token is a select statement add 2 lines.
-    // if the next token is a template start token add 2 lines.
-    const nextIsDbtTemplate = nextToken.type === tokenTypes.DBT_START_TEMPLATE;
-    const condition =
-      (nextToken.type === tokenTypes.RESERVED_TOPLEVEL &&
-        nextToken.value.toLowerCase() === 'select') ||
-      nextIsDbtTemplate;
-    const lines = condition ? 2 : 1;
+    /*
+     ** Logic when to add a double new line **
+     * If the next token is a reserved top level sql word -> add 2 lines
+     * If the next token is a dbt template start token -> add 2 lines
+     */
+    const doubleLine =
+      nextToken.type === tokenTypes.RESERVED_TOPLEVEL ||
+      nextToken.type === tokenTypes.DBT_START_TEMPLATE;
 
+    const lines = doubleLine ? 2 : 1;
     return this.addNewline(query, lines);
   }
 
@@ -178,6 +182,7 @@ export default class Formatter {
     this.inTemplateBracket = true;
 
     const nextToken = this.getNextNonWhitespaceToken();
+    const previousToken = this.getPreviousNonWhitespaceToken();
     let newToken = this.addWhitespace(this.removeWhitespace(token.value));
 
     // else is a special case in jinja
@@ -185,27 +190,28 @@ export default class Formatter {
       this.indentation.decreaseTopLevel();
       query = this.addNewline(query);
       this.indentation.increaseToplevel();
-    }
-    // If we have a dbt end marker up next, deal with indentation
-    // and add a new line before appending the token
-    else if (nextToken.type === tokenTypes.DBT_END_MARKERS) {
-      const nextIsMacroEnd = nextToken.value.toLowerCase() === 'endmacro';
-      const lines = nextIsMacroEnd ? 2 : 1;
-      if (nextIsMacroEnd) {
-        // macroend markers always need
-        // to come back to beginning
+    } else if (nextToken.type === tokenTypes.DBT_END_MARKERS) {
+      const isTopLevel = DbtConfig.topLevelWords.includes(
+        nextToken.value.toLowerCase()
+      );
+      if (isTopLevel) {
         this.indentation.reset();
       } else {
-        // if macroend not just decrease the top level
         this.indentation.decreaseTopLevel();
       }
-
-      query = this.addNewline(query, lines);
+      query = this.addNewline(query);
     } else if (
       nextToken.type === tokenTypes.DBT_START_MARKERS &&
-      !dbtNoNewline.includes(nextToken.value.toLowerCase())
+      !DbtConfig.singleLineWords.includes(nextToken.value.toLowerCase())
     ) {
       this.indentation.increaseToplevel();
+
+      if (previousToken.type === tokenTypes.WORD) {
+        // if previous token is a word, give it some space
+        // and decrease indentation
+        this.indentation.decreaseTopLevel();
+        query = this.addNewline(query, 2);
+      }
     }
 
     return query + newToken;
@@ -215,13 +221,12 @@ export default class Formatter {
     this.inTemplateBracket = false;
 
     query += this.addWhitespace(token.value);
-    const nextToken = this.getNextNonWhitespaceToken();
+    const previousToken = this.getPreviousNonWhitespaceToken();
+    const doubleLineMarker = previousToken.value
+      ? DbtConfig.doubleLineMarkers.includes(previousToken.value.toLowerCase())
+      : false;
 
-    const condition =
-      (nextToken.type === tokenTypes.DBT_START_VAR && !this.isDbtMarker) ||
-      nextToken.type === tokenTypes.DBT_START_TEMPLATE;
-
-    const lines = condition ? 2 : 1;
+    const lines = doubleLineMarker ? 2 : 1;
     return this.addNewline(query, lines);
   }
 
@@ -240,7 +245,9 @@ export default class Formatter {
   }
 
   formatBlockComment(token: Token, query: string) {
-    return this.addNewline(this.addNewline(query) + this.indentComment(token.value));
+    return this.addNewline(
+      this.addNewline(query) + this.indentComment(token.value)
+    );
   }
 
   formatReservedWord(token: Token, query: string) {
@@ -253,8 +260,17 @@ export default class Formatter {
 
     // if we are inside dbt template brackets don't add newline
     // there is some sql and jinja overlap that we account for here.
-    if (prevToken.type === tokenTypes.DBT_START_TEMPLATE || this.inTemplateBracket) {
+    if (
+      prevToken.type === tokenTypes.DBT_START_TEMPLATE ||
+      this.inTemplateBracket
+    ) {
       const newToken = this.addWhitespace(token.value.toLowerCase());
+      return query + this.equalizeWhitespace(newToken);
+    }
+
+    // WITH table as () is a special case.
+    if (token.value.toLowerCase() === 'with') {
+      const newToken = this.addWhitespace(this.upper ? token.value.toUpperCase() : token.value);
       return query + this.equalizeWhitespace(newToken);
     }
 
@@ -271,6 +287,7 @@ export default class Formatter {
 
     this.indentation.increaseToplevel();
 
+    // TODO: Make reusable function
     const newToken = this.upper ? token.value.toUpperCase() : token.value;
     query += this.equalizeWhitespace(newToken);
     return this.addNewline(query);

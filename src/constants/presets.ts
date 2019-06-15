@@ -1,13 +1,34 @@
-import { Presets } from './interfaces';
+import { Preset, SqlPresets } from './interfaces';
 
 export const formatters: string[] = ['default'];
-export const dbtNoNewline: string[] = ['set'];
-// prettier-ignore
-export const dbtStartMarkers: string[] = ['set', 'block', 'filter', 'for', 'if', 'macro', 'raw', 'call'];
-// prettier-ignore
-export const dbtEndMarkers: string[] = ['endblock', 'endfilter', 'endfor', 'endif', 'endmacro', 'endraw', 'endcall'];
+export const DbtConfig: Preset = {
+  dbtControl: [
+    'and',
+    'as',
+    'else',
+    'if',
+    'in',
+    'import',
+    'not',
+    'or',
+    'recursive',
+  ],
+  topLevelWords: ['macro', 'endmacro'],
+  singleLineWords: ['set'],
+  startMarkers: ['set', 'block', 'filter', 'for', 'if', 'macro', 'raw', 'call'],
+  endMarkers: [
+    'endblock',
+    'endfilter',
+    'endfor',
+    'endif',
+    'endmacro',
+    'endraw',
+    'endcall',
+  ],
+  doubleLineMarkers: ['endcall', 'endif', 'endmacro', 'endfor'],
+};
 
-export const presets: Presets = {
+export const presets: SqlPresets = {
   reservedWords: {
     // prettier-ignore
     default: ['A', 'ACCESSIBLE', 'AGENT', 'AGGREGATE', 'ALL', 'ALTER', 'ANY', 'ARRAY', 'AS', 'ASC',
@@ -49,7 +70,7 @@ export const presets: Presets = {
       'TRANSACTION', 'TRANSACTIONAL', 'TRIGGER', 'TRUE', 'TRUSTED', 'TYPE', 'UB1', 'UB2', 'UB4',
       'UID', 'UNDER', 'UNIQUE', 'UNPLUG', 'UNSIGNED', 'UNTRUSTED', 'USE', 'USER', 'USING',
       'VALIDATE', 'VALIST', 'VALUE', 'VARCHAR', 'VARCHAR2', 'VARIABLE', 'VARIANCE', 'VARRAY',
-      'VARYING', 'VIEW', 'VIEWS', 'VOID', 'WHENEVER', 'WHILE', 'WITH', 'WORK', 'WRAPPED', 'WRITE',
+      'VARYING', 'VIEW', 'VIEWS', 'VOID', 'WHENEVER', 'WHILE', 'WORK', 'WRAPPED', 'WRITE',
       'YEAR', 'ZONE']
   },
   reservedTopLevelWords: {
@@ -58,7 +79,7 @@ export const presets: Presets = {
       'DELETE', 'END', 'EXCEPT', 'EXCEPTION', 'FETCH FIRST', 'FROM', 'GROUP BY', 'HAVING',
       'INSERT INTO', 'INSERT', 'INTERSECT', 'LIMIT', 'LOOP', 'MODIFY', 'ORDER BY', 'SELECT',
       'SET CURRENT SCHEMA', 'SET SCHEMA', 'SET', 'START WITH', 'UNION ALL', 'UNION', 'UPDATE',
-      'VALUES', 'WHERE']
+      'VALUES', 'WHERE', 'WITH']
   },
   reservedNewLineWords: {
     // prettier-ignore
