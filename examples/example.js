@@ -1,26 +1,55 @@
 /* eslint-disable no-console */
 const formatter = require('../dist/lib/dbt-formatter');
+console.log(
+  formatter.default
+    .format(`{{ config(materialized='incremental', unique_key='tracks_user_action_dl_id') }}
 
-console.log(formatter.default.format("{% set varm = 'some magic var' %}" +
- "{{ config(materialized='incremental', unique_key='unique_id') }}" +
- "select last_value(source_item_type) {{varm}} as magic_var, max(stuff) as stuff from my_table " +
- "group by stuff where stuff > 0 and source != 'things'"));
+SELECT
+    tracks_user_action_dl_id,
+    created_datetime_utc,
+    json_data,
+    json_data:actionName::string AS action_name,
+    TRY_TO_TIMESTAMP_NTZ(json_data:servertimestamp::string) AS server_timestamp,
+    TRY_TO_TIMESTAMP_NTZ(json_data:clienttimestamp::string) AS client_timestamp,
+    TRY_TO_TIMESTAMP_NTZ(json_data:timestamp::string) AS timestamp_utc,
+    json_data:deviceId::string AS device_id,
+    json_data:sessionId::string AS session_id,
+    json_data:visitId::string AS visit_id
+FROM {{ source('logging','tracks_user_action') }}
 
-console.log('\n==================================\n')
+{% if is_incremental() %}
+WHERE created_datetime_utc >=
+  (SELECT max(created_datetime_utc)
+   FROM {{ this }})
+{% endif %}`)
+);
 
-console.log(formatter.default.format(`
+console.log('\n\n');
+
+console.log(
+  formatter.default.format(
+    `
+{{ config(materialized='incremental', unique_key='tracks_user_action_dl_id') }}
 with new_table as (
   select name, lastname from {{ ref('people') }}
 )
 
 select *
-from new_table;
-`))
+from new_table
+{% if is_incremental() %}
+WHERE created_datetime_utc >=
+  (SELECT max(created_datetime_utc)
+   FROM {{ this }})
+{% endif %}
+`,
+    { sql: 'default', indent: 4, upper: true }
+  )
+);
 
-console.log('\n==================================\n')
+console.log('\n\n');
 
-
-console.log(formatter.default.format(`{% macro get_tables(db, schema, exclude='') %}
+console.log(
+  formatter.default.format(`{% macro get_tables(db, schema, exclude='') %}
 
 {%- call statement('tables', fetch_result=True) %}
 
@@ -39,11 +68,14 @@ console.log(formatter.default.format(`{% macro get_tables(db, schema, exclude=''
         {{ return([]) }}
     {%- endif -%}
 
-{% endmacro %}`))
+{% endmacro %}`)
+);
 
-console.log('\n==================================\n')
+console.log('\n\n');
 
-console.log(formatter.default.format(`{% macro star(from, relation_alias=False, except=[]) -%}
+console.log(
+  formatter.default
+    .format(`{% macro star(from, relation_alias=False, except=[]) -%}
 
     {#-- Prevent querying of db in parsing mode. This works because this macro does not create any new refs. #}
     {%- if not execute -%}
@@ -66,4 +98,5 @@ console.log(formatter.default.format(`{% macro star(from, relation_alias=False, 
         {% endif %}
 
     {%- endfor -%}
-{%- endmacro %}`))
+{%- endmacro %}`)
+);

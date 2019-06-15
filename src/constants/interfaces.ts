@@ -21,7 +21,7 @@ export interface Preset {
   [s: string]: string[];
 }
 
-export interface Presets {
+export interface SqlPresets {
   [s: string]: Preset;
 }
 
