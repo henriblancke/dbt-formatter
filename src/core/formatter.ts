@@ -306,6 +306,7 @@ export default class Formatter {
     // if the previous token is a dbt config variable keep current indentation
     const previousConfigBlock = this.variableName.toLowerCase() === 'config';
     if (this.inIncrementalBlock || previousConfigBlock) {
+      this.variableName = '';
       this.inIncrementalBlock = false;
     } else {
       this.indentation.decreaseTopLevel();
