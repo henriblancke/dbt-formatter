@@ -1,6 +1,7 @@
 import { isEmpty, escapeRegExp } from 'lodash';
 import tokenTypes from '../constants/token-types';
 import { DbtConfig } from '../constants/presets';
+import { LinkedList } from '../tools/linked-list';
 import { Config, Token, RegexDefinition } from '../constants/interfaces';
 
 export default class Tokenizer {
@@ -24,7 +25,7 @@ export default class Tokenizer {
     this.cfg = cfg;
   }
 
-  static escapeParen(paren: string) {
+  private static escapeParen = (paren: string): string => {
     if (paren.length === 1) {
       // single punctuation character
       return escapeRegExp(paren);
@@ -32,7 +33,7 @@ export default class Tokenizer {
       // longer word
       return '\\b' + paren + '\\b';
     }
-  }
+  };
 
   // This enables the following string patterns:
   // 1. backtick quoted string using `` to escape
@@ -40,7 +41,7 @@ export default class Tokenizer {
   // 3. double quoted string using "" or \" to escape
   // 4. single quoted string using '' or \' to escape
   // 5. national character quoted string using N'' or N\' to escape
-  static createStringPattern(types: string[]): string {
+  private static createStringPattern = (types: string[]): string => {
     const patterns: { [k: string]: string } = {
       '``': '((`[^`]*($|`))+)',
       '[]': '((\\[[^\\]]*($|\\]))(\\][^\\]]*($|\\]))*)',
@@ -50,41 +51,47 @@ export default class Tokenizer {
     };
 
     return types.map(t => patterns[t]).join('|');
-  }
+  };
 
-  static createLineCommentRegex(ids: string[]) {
+  private static createLineCommentRegex = (ids: string[]): RegExp => {
     return new RegExp(`^((?:${ids.map(id => escapeRegExp(id)).join('|')}).*?(?:\n|$))`);
-  }
+  };
 
-  static createMultiWordRegex(words: string[]) {
+  private static createMultiWordRegex = (words: string[]): RegExp => {
     const pattern = words.join('|').replace(/ /g, '\\s+');
     return new RegExp(`^(${pattern})\\b`, 'i');
-  }
+  };
 
-  static createWordRegex(chars: string[]) {
+  private static createWordRegex = (chars: string[]): RegExp => {
     return new RegExp(`^([\\w${chars.join('')}]+)`);
-  }
+  };
 
-  static createStringRegex(types: string[]) {
+  private static createStringRegex = (types: string[]): RegExp => {
     return new RegExp('^(' + Tokenizer.createStringPattern(types) + ')');
-  }
+  };
 
-  static createParenRegex(parens: string[]) {
+  private static createParenRegex = (parens: string[]): RegExp => {
     return new RegExp('^(' + parens.map(p => Tokenizer.escapeParen(p)).join('|') + ')', 'i');
-  }
+  };
 
-  static createPlaceholderRegex(types: string[], pattern: string) {
+  private static createPlaceholderRegex = (types: string[], pattern: string): RegExp => {
     if (isEmpty(types)) {
       return /.^/;
     }
 
     const typesRegex = types.map(escapeRegExp).join('|');
     return new RegExp(`^((?:${typesRegex})(?:${pattern}))`);
-  }
+  };
 
-  static getEscapedPlaceholderKey({ key, quoteChar }: { key: string; quoteChar: string }) {
+  private static getEscapedPlaceholderKey = ({
+    key,
+    quoteChar,
+  }: {
+    key: string;
+    quoteChar: string;
+  }): string => {
     return key.replace(new RegExp(escapeRegExp('\\') + quoteChar, 'g'), quoteChar);
-  }
+  };
 
   /**
    * Takes a SQL string and breaks it into tokens.
@@ -95,25 +102,26 @@ export default class Tokenizer {
    *  @return {String} token.type
    *  @return {String} token.value
    */
-  tokenize(input: string) {
+  public tokenize = (input: string): LinkedList<Token> => {
     let token: Token = { type: '', value: '' };
-    const tokens: Token[] = [];
+    let tokens: LinkedList<Token> = new LinkedList<Token>();
 
-    // Keep processing the string until it is empty
+    // Keep going till the end of the string
     while (input.length) {
       // Get the next token
       const tmp = this.getNextToken(input, token);
 
       if (tmp) {
         token = tmp as Token;
+        tokens.append(token);
         input = input.substring(token.value.length);
-        tokens.push(token);
       }
     }
-    return tokens;
-  }
 
-  getNextToken(input: string, prev: Token): Token | boolean {
+    return tokens;
+  };
+
+  private getNextToken = (input: string, prev: Token): Token | boolean => {
     const regexes = this.getRegexes(input, prev);
     const sorted = Object.keys(regexes).sort();
 
@@ -127,9 +135,9 @@ export default class Tokenizer {
     }
 
     return result;
-  }
+  };
 
-  static matchRegex(df: RegexDefinition): Token | boolean {
+  private static matchRegex = (df: RegexDefinition): Token | boolean => {
     const matches = df.input.match(df.regex);
     if (matches && matches.index === 0) {
       return {
@@ -139,9 +147,9 @@ export default class Tokenizer {
       };
     }
     return false;
-  }
+  };
 
-  getRegexes(input: string, prev: Token): { [n: number]: RegexDefinition } {
+  private getRegexes = (input: string, prev: Token): { [n: number]: RegexDefinition } => {
     return {
       0: {
         input,
@@ -280,14 +288,14 @@ export default class Tokenizer {
         regex: /^(!=|<>|==|<=|>=|!<|!>|\|\||::|->>|->|~~\*|~~|!~~\*|!~~|~\*|!~\*|!~|.)/,
       },
     };
-  }
+  };
 
-  static getReservedWordToken(input: string, prev: Token, regex: RegExp) {
+  private static getReservedWordToken = (input: string, prev: Token, regex: RegExp): RegExp => {
     // A reserved word cannot be preceded by a "."
     // this makes it so in "mytable.from", "from" is not considered a reserved word
     if (prev && prev.value && prev.value === '.') {
       return /.^/;
     }
     return regex;
-  }
+  };
 }

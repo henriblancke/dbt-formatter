@@ -26,57 +26,57 @@ export default class Indentation {
   /**
    * Resets indentation.
    */
-  reset() {
+  reset = () => {
     this.indentTypes = [];
-  }
+  };
 
-  count() {
+  count = () => {
     return this.indentTypes.length;
-  }
+  };
 
   /**
    * Returns current indentation string.
    * @return {String}
    */
-  getIndent() {
+  getIndent = (): string => {
     return repeat(this.indent, this.indentTypes.length);
-  }
+  };
 
   /**
    * Increases indentation by one top-level indent.
    */
-  increaseToplevel() {
+  increaseToplevel = () => {
     this.indentTypes.push(INDENT_TYPE_TOP_LEVEL);
-  }
+  };
 
   /**
    * Increases indentation by one block-level indent.
    */
-  increaseBlockLevel() {
+  increaseBlockLevel = () => {
     this.indentTypes.push(INDENT_TYPE_BLOCK_LEVEL);
-  }
+  };
 
   /**
    * Decreases indentation by one top-level indent.
    * Does nothing when the previous indent is not top-level.
    */
-  decreaseTopLevel() {
+  decreaseTopLevel = () => {
     if (last(this.indentTypes) === INDENT_TYPE_TOP_LEVEL) {
       this.indentTypes.pop();
     }
-  }
+  };
 
   /**
    * Decreases indentation by one block-level indent.
    * If there are top-level indents within the block-level indent,
    * throws away these as well.
    */
-  decreaseBlockLevel() {
+  decreaseBlockLevel = () => {
     while (this.indentTypes.length > 0) {
       const type = this.indentTypes.pop();
       if (type !== INDENT_TYPE_TOP_LEVEL) {
         break;
       }
     }
-  }
+  };
 }
