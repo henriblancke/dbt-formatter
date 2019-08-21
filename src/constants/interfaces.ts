@@ -2,6 +2,9 @@ export interface Options {
   sql: string;
   indent: number;
   upper?: boolean;
+  newline?: boolean;
+  lowerWords?: boolean;
+  allowCamelcase?: boolean;
 }
 
 export interface Config {

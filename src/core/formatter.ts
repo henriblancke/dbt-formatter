@@ -16,10 +16,13 @@ export default class Formatter {
   tokens: Token[] = [];
   index: number = 0;
   upper: boolean = false;
+  newline: boolean = true;
   indentation: Indentation;
   isDbtMarker: boolean = false;
   inlineBlock = new InlineBlock();
   inTemplateBracket: boolean = false;
+  lowerWords: boolean = false;
+  allowCamelcase: boolean = true;
   previousReservedWord: Token = { type: '', value: '' };
 
   constructor(opt: Options) {
@@ -191,9 +194,7 @@ export default class Formatter {
       query = this.addNewline(query);
       this.indentation.increaseToplevel();
     } else if (nextToken.type === tokenTypes.DBT_END_MARKERS) {
-      const isTopLevel = DbtConfig.topLevelWords.includes(
-        nextToken.value.toLowerCase()
-      );
+      const isTopLevel = DbtConfig.topLevelWords.includes(nextToken.value.toLowerCase());
       if (isTopLevel) {
         this.indentation.reset();
       } else {
@@ -245,9 +246,7 @@ export default class Formatter {
   }
 
   formatBlockComment(token: Token, query: string) {
-    return this.addNewline(
-      this.addNewline(query) + this.indentComment(token.value)
-    );
+    return this.addNewline(this.addNewline(query) + this.indentComment(token.value));
   }
 
   formatReservedWord(token: Token, query: string) {
@@ -260,10 +259,7 @@ export default class Formatter {
 
     // if we are inside dbt template brackets don't add newline
     // there is some sql and jinja overlap that we account for here.
-    if (
-      prevToken.type === tokenTypes.DBT_START_TEMPLATE ||
-      this.inTemplateBracket
-    ) {
+    if (prevToken.type === tokenTypes.DBT_START_TEMPLATE || this.inTemplateBracket) {
       const newToken = this.addWhitespace(token.value.toLowerCase());
       return query + this.equalizeWhitespace(newToken);
     }
