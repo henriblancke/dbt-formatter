@@ -3,7 +3,7 @@ import { presets, formatters } from './constants/presets';
 import Tokenizer from './core/tokenizer';
 import Formatter from './core/formatter';
 
-function getConfiguration(opt: Options): Config {
+const getConfiguration = (opt: Options): Config => {
   const identifier = opt.sql;
   return {
     reservedWords: presets['reservedWords'][identifier],
@@ -17,23 +17,23 @@ function getConfiguration(opt: Options): Config {
     lineCommentTypes: presets['lineCommentTypes'][identifier],
     specialWordChars: presets['specialWordChars'][identifier],
   };
-}
-
-export default {
-  /**
-   * Formats the sql string.
-   *
-   * @param {String} query
-   * @param {Options} opt
-   * @return {String}
-   */
-  format: (query: string, opt: Options = { sql: 'default', indent: 2 }): string => {
-    if (!formatters.includes(opt.sql)) {
-      throw Error(`Unsupported SQL dialect: ${opt.sql}`);
-    }
-
-    const config = getConfiguration(opt);
-    const tokens = new Tokenizer(config).tokenize(query);
-    return new Formatter(opt).format(tokens);
-  },
 };
+
+/**
+ * Formats the sql string.
+ *
+ * @param {String} query
+ * @param {Options} opt
+ * @return {String}
+ */
+const format = (query: string, opt: Options = { sql: 'default', indent: 2 }): string => {
+  if (!formatters.includes(opt.sql)) {
+    throw Error(`Unsupported SQL dialect: ${opt.sql}`);
+  }
+
+  const config = getConfiguration(opt);
+  const tokens = new Tokenizer(config).tokenize(query);
+  return new Formatter(opt).format(tokens);
+};
+
+export default format;
