@@ -275,7 +275,10 @@ export default class Formatter {
 
   private formatReservedWord = (node: Node<Token>, query: string) => {
     const token = node.item;
-    token.value = this.upper ? token.value.toUpperCase() : token.value;
+    token.value =
+      this.upper && !this.inTemplateBlock && !this.inVariableBlock
+        ? token.value.toUpperCase()
+        : token.value;
     return this.formatWithSpaces(node, query);
   };
 
