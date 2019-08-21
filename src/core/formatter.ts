@@ -350,7 +350,9 @@ export default class Formatter {
     if (node.previous && !preserveWhitespaceFor.includes(node.previous.item.type)) {
       query = normalize.trimEnd(query);
     }
-    query += node.item.value;
+
+    // dirty fix for when we allow a word to have the same function as an opening parenthesis
+    query += this.upper ? node.item.value.toUpperCase() : node.item.value;
 
     this.inlineBlock.beginIfPossible(node);
 
@@ -374,6 +376,9 @@ export default class Formatter {
 
   // Closing parentheses decrease the block indent level
   private formatClosingParentheses = (node: Node<Token>, query: string) => {
+    // dirty fix for when we allow a word to have the same function as a closing parenthesis
+    node.item.value = this.upper ? node.item.value.toUpperCase() : node.item.value;
+
     if (this.inlineBlock.isActive()) {
       this.inlineBlock.end();
       return this.formatWithSpaceAfter(node, query);
