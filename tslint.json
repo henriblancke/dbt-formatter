@@ -1,5 +1,6 @@
 {
   "extends": [
+    "tslint",
     "tslint-config-standard",
     "tslint-config-prettier"
   ],
@@ -26,16 +27,20 @@
     },
     "semicolon": [
       true,
-      "always"
+      "always",
+      "ignore-bound-class-methods"
     ],
     "trailing-comma": [
       true,
       {
         "multiline": {
-          "objects": "always",
+          "objects": "ignore",
           "arrays": "always",
           "functions": "never",
           "typeLiterals": "ignore"
+        },
+        "singleline": {
+          "objects": "ignore"
         },
         "esSpecCompliant": true
       }
