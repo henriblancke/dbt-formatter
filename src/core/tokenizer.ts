@@ -5,26 +5,6 @@ import { LinkedList } from '../tools/linked-list';
 import { Config, Token, RegexDefinition } from '../constants/interfaces';
 
 export default class Tokenizer {
-  /**
-   * @param {Object} cfg
-   *  @param {String[]} cfg.reservedWords Reserved words in SQL
-   *  @param {String[]} cfg.reservedToplevelWords Words that are set to new line separately
-   *  @param {String[]} cfg.reservedNewlineWords Words that are set to newline
-   *  @param {String[]} cfg.stringTypes String types to enable: "", '', ``, [], N''
-   *  @param {String[]} cfg.openParens Opening parentheses to enable, like (, [
-   *  @param {String[]} cfg.closeParens Closing parentheses to enable, like ), ]
-   *  @param {String[]} cfg.indexedPlaceholderTypes Prefixes for indexed placeholders, like ?
-   *  @param {String[]} cfg.namedPlaceholderTypes Prefixes for named placeholders, like @ and :
-   *  @param {String[]} cfg.lineCommentTypes Line comments to enable, like # and --
-   *  @param {String[]} cfg.specialWordChars Special chars that can be found inside of words, like @ and #
-   */
-
-  cfg: Config;
-
-  constructor(cfg: Config) {
-    this.cfg = cfg;
-  }
-
   private static escapeParen = (paren: string): string => {
     if (paren.length === 1) {
       // single punctuation character
@@ -83,15 +63,37 @@ export default class Tokenizer {
     return new RegExp(`^((?:${typesRegex})(?:${pattern}))`);
   };
 
-  private static getEscapedPlaceholderKey = ({
-    key,
-    quoteChar,
-  }: {
-    key: string;
-    quoteChar: string;
-  }): string => {
+  private static getEscapedPlaceholderKey = ({ key, quoteChar }: { key: string; quoteChar: string }): string => {
     return key.replace(new RegExp(escapeRegExp('\\') + quoteChar, 'g'), quoteChar);
   };
+
+  private static getReservedWordToken = (input: string, prev: Token, regex: RegExp): RegExp => {
+    // A reserved word cannot be preceded by a "."
+    // this makes it so in "mytable.from", "from" is not considered a reserved word
+    if (prev && prev.value && prev.value === '.') {
+      return /.^/;
+    }
+    return regex;
+  };
+
+  private cfg: Config;
+
+  /**
+   * @param {Object} cfg
+   *  @param {String[]} cfg.reservedWords Reserved words in SQL
+   *  @param {String[]} cfg.reservedToplevelWords Words that are set to new line separately
+   *  @param {String[]} cfg.reservedNewlineWords Words that are set to newline
+   *  @param {String[]} cfg.stringTypes String types to enable: "", '', ``, [], N''
+   *  @param {String[]} cfg.openParens Opening parentheses to enable, like (, [
+   *  @param {String[]} cfg.closeParens Closing parentheses to enable, like ), ]
+   *  @param {String[]} cfg.indexedPlaceholderTypes Prefixes for indexed placeholders, like ?
+   *  @param {String[]} cfg.namedPlaceholderTypes Prefixes for named placeholders, like @ and :
+   *  @param {String[]} cfg.lineCommentTypes Line comments to enable, like # and --
+   *  @param {String[]} cfg.specialWordChars Special chars that can be found inside of words, like @ and #
+   */
+  constructor(cfg: Config) {
+    this.cfg = cfg;
+  }
 
   /**
    * Takes a SQL string and breaks it into tokens.
@@ -104,7 +106,7 @@ export default class Tokenizer {
    */
   public tokenize = (input: string): LinkedList<Token> => {
     let token: Token = { type: '', value: '' };
-    let tokens: LinkedList<Token> = new LinkedList<Token>();
+    const tokens: LinkedList<Token> = new LinkedList<Token>();
 
     // Keep going till the end of the string
     while (input.length) {
@@ -271,11 +273,7 @@ export default class Tokenizer {
       18: {
         input,
         type: tokenTypes.RESERVED,
-        regex: Tokenizer.getReservedWordToken(
-          input,
-          prev,
-          Tokenizer.createMultiWordRegex(this.cfg.reservedWords)
-        ),
+        regex: Tokenizer.getReservedWordToken(input, prev, Tokenizer.createMultiWordRegex(this.cfg.reservedWords)),
       },
       19: {
         input,
@@ -288,14 +286,5 @@ export default class Tokenizer {
         regex: /^(!=|<>|==|<=|>=|!<|!>|\|\||::|->>|->|~~\*|~~|!~~\*|!~~|~\*|!~\*|!~|.)/,
       },
     };
-  };
-
-  private static getReservedWordToken = (input: string, prev: Token, regex: RegExp): RegExp => {
-    // A reserved word cannot be preceded by a "."
-    // this makes it so in "mytable.from", "from" is not considered a reserved word
-    if (prev && prev.value && prev.value === '.') {
-      return /.^/;
-    }
-    return regex;
   };
 }

@@ -6,16 +6,7 @@ export const DbtConfig: Preset = {
   topLevelWords: ['macro', 'endmacro', 'snapshot', 'endsnapshot'],
   singleLineWords: ['set'],
   startMarkers: ['set', 'block', 'filter', 'for', 'if', 'macro', 'raw', 'call', 'snapshot'],
-  endMarkers: [
-    'endblock',
-    'endfilter',
-    'endfor',
-    'endif',
-    'endmacro',
-    'endraw',
-    'endcall',
-    'endsnapshot',
-  ],
+  endMarkers: ['endblock', 'endfilter', 'endfor', 'endif', 'endmacro', 'endraw', 'endcall', 'endsnapshot'],
   doubleLineMarkers: ['endcall', 'endif', 'endmacro', 'endfor', 'endsnapshot'],
 };
 

@@ -9,7 +9,6 @@
         120
       ]
     },
-    "new-parens": true,
     "no-arg": true,
     "no-bitwise": true,
     "no-conditional-assignment": true,
@@ -40,6 +39,9 @@
         },
         "esSpecCompliant": true
       }
-    ]
+    ],
+    "forin": false,
+    "ordered-imports": false,
+    "object-literal-sort-keys": false
   }
 }

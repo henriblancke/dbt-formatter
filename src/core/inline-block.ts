@@ -5,7 +5,18 @@ import { Node } from '../tools/linked-list';
 const INLINE_MAX_LENGTH = 50;
 
 export default class InlineBlock {
-  level: number = 0;
+  // Reserved words that cause newlines, comments and semicolons
+  // are not allowed inside inline parentheses block
+  private static isForbiddenToken = ({ type, value }: Token): boolean => {
+    return (
+      type === tokenTypes.RESERVED_TOPLEVEL ||
+      type === tokenTypes.RESERVED_NEWLINE ||
+      type === tokenTypes.BLOCK_COMMENT ||
+      value === ';'
+    );
+  };
+
+  private level: number = 0;
 
   /**
    * Begins inline block when lookahead through upcoming tokens determines
@@ -71,16 +82,5 @@ export default class InlineBlock {
     }
 
     return false;
-  };
-
-  // Reserved words that cause newlines, comments and semicolons
-  // are not allowed inside inline parentheses block
-  private static isForbiddenToken = ({ type, value }: Token): boolean => {
-    return (
-      type === tokenTypes.RESERVED_TOPLEVEL ||
-      type === tokenTypes.RESERVED_NEWLINE ||
-      type === tokenTypes.BLOCK_COMMENT ||
-      value === ';'
-    );
   };
 }

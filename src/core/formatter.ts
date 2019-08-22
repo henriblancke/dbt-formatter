@@ -14,18 +14,18 @@ import { Options, Token } from '../constants/interfaces';
 // 1. Always try to derive rules based on next token when dependencies are necassary
 
 export default class Formatter {
-  upper: boolean = false;
-  newline: boolean = true;
-  indentation: Indentation;
-  variableName: string = '';
-  lowerWords: boolean = false;
-  allowCamelcase: boolean = true;
-  inlineOneLiner: boolean = false;
-  inTemplateBlock: boolean = false;
-  inVariableBlock: boolean = false;
-  inIncrementalBlock: boolean = false;
-  inlineBlock: InlineBlock = new InlineBlock();
-  previousReservedWord: Token = { type: '', value: '' };
+  private upper: boolean = false;
+  private newline: boolean = true;
+  private indentation: Indentation;
+  private variableName: string = '';
+  private lowerWords: boolean = false;
+  private allowCamelcase: boolean = true;
+  private inlineOneLiner: boolean = false;
+  private inTemplateBlock: boolean = false;
+  private inVariableBlock: boolean = false;
+  private inIncrementalBlock: boolean = false;
+  private inlineBlock: InlineBlock = new InlineBlock();
+  private previousReservedWord: Token = { type: '', value: '' };
 
   constructor(opt: Options) {
     const { indent, upper, newline, lowerWords, allowCamelcase } = opt;
@@ -179,8 +179,7 @@ export default class Formatter {
      */
     const doubleLine =
       nextToken &&
-      (nextToken.item.type === tokenTypes.RESERVED_TOPLEVEL ||
-        nextToken.item.type === tokenTypes.DBT_START_TEMPLATE);
+      (nextToken.item.type === tokenTypes.RESERVED_TOPLEVEL || nextToken.item.type === tokenTypes.DBT_START_TEMPLATE);
 
     const lines = doubleLine ? 2 : 1;
     return this.addNewline(query, lines);
@@ -276,9 +275,7 @@ export default class Formatter {
   private formatReservedWord = (node: Node<Token>, query: string) => {
     const token = node.item;
     token.value =
-      this.upper && !this.inTemplateBlock && !this.inVariableBlock
-        ? token.value.toUpperCase()
-        : token.value;
+      this.upper && !this.inTemplateBlock && !this.inVariableBlock ? token.value.toUpperCase() : token.value;
     return this.formatWithSpaces(node, query);
   };
 
@@ -299,9 +296,7 @@ export default class Formatter {
 
     // WITH table as () is a special case.
     if (token.value.toLowerCase() === 'with') {
-      const newToken = normalize.addWhitespace(
-        this.upper ? token.value.toUpperCase() : token.value
-      );
+      const newToken = normalize.addWhitespace(this.upper ? token.value.toUpperCase() : token.value);
       return query + normalize.equalizeWhitespace(newToken);
     }
 
@@ -341,11 +336,7 @@ export default class Formatter {
   private formatOpeningParentheses = (node: Node<Token>, query: string) => {
     // Take out the preceding space unless there was whitespace there in the original query
     // or another opening parens or line comment
-    const preserveWhitespaceFor = [
-      tokenTypes.WHITESPACE,
-      tokenTypes.OPEN_PAREN,
-      tokenTypes.LINE_COMMENT,
-    ];
+    const preserveWhitespaceFor = [tokenTypes.WHITESPACE, tokenTypes.OPEN_PAREN, tokenTypes.LINE_COMMENT];
 
     if (node.previous && !preserveWhitespaceFor.includes(node.previous.item.type)) {
       query = normalize.trimEnd(query);
