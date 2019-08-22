@@ -1,6 +1,6 @@
 {
   "name": "dbt-formatter",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "DBT jinja/sql formatter",
   "keywords": [
     "dbt",
@@ -41,7 +41,7 @@
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "precommit": "lint-staged",
-    "travis-deploy-once": "travis-deploy-once"
+    "tslint-check": "tslint-config-prettier-check ./tslint.json"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -71,10 +71,10 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 90,
-        "functions": 95,
-        "lines": 95,
-        "statements": 95
+        "branches": 75,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
       }
     },
     "collectCoverageFrom": [
@@ -84,7 +84,8 @@
   "prettier": {
     "semi": true,
     "singleQuote": true,
-    "trailingComma": "es5"
+    "trailingComma": "es5",
+    "printWidth": 120
   },
   "commitlint": {
     "extends": [
@@ -122,12 +123,12 @@
     "ts-jest": "^23.10.2",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.15.0",
+    "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.14.2",
     "typescript": "^3.0.3"
   },
   "dependencies": {
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.13"
   }
 }

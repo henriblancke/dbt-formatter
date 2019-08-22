@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/henriblancke/dbt-formatter/tree/master.svg?style=svg)](https://circleci.com/gh/henriblancke/dbt-formatter/tree/master)
+
 # DBT Formatter
 
 ### Install
@@ -58,6 +60,9 @@ By default, there are two disabled git hooks. They're set up when you run the `n
 This makes more sense in combination with [automatic releases](#automatic-releases)
 
 ## Roadmap
-- CI/CD
-- Testing
-- Add more sql dialects compatible with dbt
+- Add more sql dialects:
+  - [x] snowflake
+  - [ ] redshift
+  - [ ] bigquery
+  - [ ] postgres
+  - [ ] presto
