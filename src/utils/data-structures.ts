@@ -1,8 +1,4 @@
-export interface Node<T> {
-  item: T;
-  next?: Node<T>;
-  previous?: Node<T>;
-}
+import { Node } from '../types';
 
 export class LinkedList<T> {
   private readonly EMPTY_NODE: Node<T> = { item: {} as T, next: undefined };

@@ -1,4 +1,4 @@
-import { Preset, SqlPresets } from './interfaces';
+import { Preset, SqlPresets } from '../types';
 
 export const formatters: string[] = ['default'];
 export const DbtConfig: Preset = {
@@ -94,7 +94,7 @@ export const presets: SqlPresets = {
       'OBJECT_INSERT', 'OCICOLL', 'OCIDATE', 'OCIDATETIME',
       'OCIDURATION', 'OCIINTERVAL', 'OCILOBLOCATOR', 'OCINUMBER',
       'OCIRAW', 'OCIREF', 'OCIREFCURSOR', 'OCIROWID', 'OCISTRING',
-      'OCITYPE', 'OCTET_LENGTH', 'OF', 'OLD', 'ON', 'ONLY', 'OPAQUE',
+      'OCITYPE', 'OCTET_LENGTH', 'OF', 'OLD', 'ONLY', 'OPAQUE',
       'OPEN', 'OPERATOR', 'OPTION', 'ORACLE', 'ORADATA', 'ORDER',
       'ORGANIZATION', 'ORLANY', 'ORLVARY', 'OTHERS', 'OUT', 'OVERLAPS',
       'OVERRIDING', 'PACKAGE', 'PARALLEL_ENABLE', 'PARAMETER',
@@ -167,7 +167,7 @@ export const presets: SqlPresets = {
     // prettier-ignore
     default: ['AND', 'CROSS APPLY', 'CROSS JOIN', 'ELSE', 'END', 'INNER JOIN', 'JOIN', 'LEFT JOIN',
       'LEFT OUTER JOIN', 'OR', 'OUTER APPLY', 'OUTER JOIN', 'RIGHT JOIN', 'RIGHT OUTER JOIN',
-      'WHEN', 'XOR']
+      'WHEN', 'XOR', 'ON']
   },
   stringTypes: {
     default: [`""`, "N''", "''", '``', '[]'],
@@ -188,6 +188,6 @@ export const presets: SqlPresets = {
     default: ['#', '--', '{#', '#}'],
   },
   specialWordChars: {
-    default: ['::'],
+    default: [""],
   },
 };
