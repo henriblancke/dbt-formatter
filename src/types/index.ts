@@ -1,3 +1,9 @@
+export interface Node<T> {
+  item: T;
+  next?: Node<T>;
+  previous?: Node<T>;
+}
+
 export interface Options {
   sql: string;
   indent: number;

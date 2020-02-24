@@ -1,6 +1,5 @@
+import { Token, Node } from '../types';
 import tokenTypes from '../constants/token-types';
-import { Token } from '../constants/interfaces';
-import { Node } from '../tools/linked-list';
 
 const INLINE_MAX_LENGTH = 50;
 

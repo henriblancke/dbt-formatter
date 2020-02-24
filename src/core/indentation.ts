@@ -30,7 +30,7 @@ export default class Indentation {
     this.indentTypes = [];
   };
 
-  public count = () => {
+  public count = (): number => {
     return this.indentTypes.length;
   };
 

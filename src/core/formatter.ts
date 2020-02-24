@@ -1,10 +1,10 @@
 import Indentation from './indentation';
 import InlineBlock from './inline-block';
-import * as normalize from '../tools/normalize';
+import { DbtConfig } from '../constants';
+import { Options, Token, Node } from '../types';
+import * as normalize from '../utils/normalize';
 import tokenTypes from '../constants/token-types';
-import { DbtConfig } from '../constants/presets';
-import { Node, LinkedList } from '../tools/linked-list';
-import { Options, Token } from '../constants/interfaces';
+import { LinkedList } from '../utils/data-structures';
 
 // Whitespaces:
 // 1. The previous token will always append a whitespace (if needed).
@@ -81,6 +81,8 @@ export default class Formatter {
         formattedQuery = this.formatWithoutSpaces(node, formattedQuery);
       } else if (token.value === ';') {
         formattedQuery = this.formatQuerySeparator(node, formattedQuery);
+      } else if (token.type === tokenTypes.OPERATOR) {
+        formattedQuery = this.formatOperator(node, formattedQuery);
       } else if (token.type === tokenTypes.WORD) {
         formattedQuery = this.formatWord(node, formattedQuery);
       } else {
@@ -166,7 +168,7 @@ export default class Formatter {
     // a new line.
     const noNewLine =
       nextToken &&
-      (nextToken.item.type === tokenTypes.RESERVED ||
+      (nextToken.item.type === tokenTypes.RESERVED || nextToken.item.type === tokenTypes.OPERATOR ||
         DbtConfig.dbtControl.includes(nextToken.item.value.toLowerCase()));
     if (noNewLine) {
       return query;
@@ -394,6 +396,17 @@ export default class Formatter {
     } else {
       return this.addNewline(query);
     }
+  };
+
+  private formatOperator = (node: Node<Token>, query: string) => {
+    const token = node.item;
+    const prevToken = this.getPreviousNodeNonWhitespace(node);
+
+    if (prevToken && prevToken.item.type === tokenTypes.OPERATOR) {
+      return normalize.trimEnd(query) + normalize.removeWhitespace(token.value) + ' ';
+    }
+
+    return this.formatWithSpaces(node, query);
   };
 
   private formatWithSpaceAfter = (node: Node<Token>, query: string) => {
