@@ -101,8 +101,12 @@
     "typescript": "^3.8.2"
   },
   "dependencies": {
+    "@types/glob": "^7.1.1",
     "commander": "^4.1.1",
+    "glob": "^7.1.6",
     "lodash": "^4.17.15",
-    "pkg": "^4.4.3"
+    "nvm": "0.0.4",
+    "pkg": "^4.4.8",
+    "save": "^2.4.0"
   }
 }
