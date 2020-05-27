@@ -15,8 +15,8 @@ program
   .parse(process.argv);
 
 const factory = (file: string): Writer => {
-  return program.replace ? new FileWriter(file) : new StdOutWriter()
-}
+  return program.replace ? new FileWriter(file) : new StdOutWriter();
+};
 
 const worker = (file: string) => {
   const query = readFileSync(file);
@@ -27,14 +27,13 @@ const worker = (file: string) => {
     allowCamelcase: program.camelcase,
   });
 
-  const writer = factory(file)
-  writer.write(formatted)
-}
+  const writer = factory(file);
+  writer.write(formatted);
+};
 
 if (program.file) {
   worker(program.file);
 } else if (program.directory) {
-  const all_files = glob.sync(`${program.directory}/**/*.sql`)
-  all_files.forEach(worker)
+  const allFiles = glob.sync(`${program.directory}/**/*.sql`);
+  allFiles.forEach(worker);
 }
-

@@ -1,4 +1,4 @@
-import { DbtConfig } from '@constants/index';
+import { DbtConfig } from '@constants';
 import { isEmpty, escapeRegExp } from 'lodash';
 import tokenTypes from '@constants/token-types';
 import { LinkedList } from '@utils/data-structures';
