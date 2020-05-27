@@ -1,25 +1,40 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@types": [
+        "types/index"
+      ],
+      "@core/*": [
+        "core/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@constants": [
+        "constants/index"
+      ],
+      "@constants/*": [
+        "constants/*"
+      ],
+    },
+    "types": [
+      "node",
+      "jest"
+    ],
+    "target": "ES2015",
+    "module": "ES2020",
+    "esModuleInterop": true,
     "moduleResolution": "node",
-    "target": "es5",
-    "module": "es2015",
-    "lib": [
-      "esnext"
-    ],
-    "strict": true,
-    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist/esm",
     "declaration": true,
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "declarationDir": "dist/types",
-    "outDir": "dist/lib",
     "typeRoots": [
-      "node_modules/@types"
-    ],
-    "downlevelIteration": true
+      "./src/types",
+      "./node_modules/@types"
+    ]
   },
   "include": [
-    "src"
-  ]
+    "./src",
+  ],
 }

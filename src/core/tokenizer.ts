@@ -1,8 +1,8 @@
-import { DbtConfig } from '../constants';
+import { DbtConfig } from '@constants';
 import { isEmpty, escapeRegExp } from 'lodash';
-import tokenTypes from '../constants/token-types';
-import { LinkedList } from '../utils/data-structures';
-import { Config, Token, RegexDefinition } from '../types';
+import tokenTypes from '@constants/token-types';
+import { LinkedList } from '@utils/data-structures';
+import { Config, Token, RegexDefinition } from '@types';
 
 export default class Tokenizer {
   private static escapeParen = (paren: string): string => {

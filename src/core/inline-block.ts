@@ -1,5 +1,5 @@
-import { Token, Node } from '../types';
-import tokenTypes from '../constants/token-types';
+import { Token, Node } from '@types';
+import tokenTypes from '@constants/token-types';
 
 const INLINE_MAX_LENGTH = 50;
 

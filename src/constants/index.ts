@@ -1,4 +1,4 @@
-import { Preset, SqlPresets } from '../types';
+import { Preset, SqlPresets } from '@types';
 
 export const formatters: string[] = ['default'];
 export const DbtConfig: Preset = {
