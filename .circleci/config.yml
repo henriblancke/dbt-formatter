@@ -20,7 +20,7 @@ jobs:
       - run: npm install
       - run:
           name: Run tests
-          command: npm run test:prod
+          command: npm run test:ci
 
       - save_cache:
           paths:
