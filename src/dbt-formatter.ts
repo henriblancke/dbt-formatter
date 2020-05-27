@@ -1,7 +1,7 @@
-import Tokenizer from './core/tokenizer';
-import Formatter from './core/formatter';
-import { Config, Options } from './types';
-import { presets, formatters } from './constants';
+import Tokenizer from '@core/tokenizer';
+import Formatter from '@core/formatter';
+import { Config, Options } from '@types';
+import { presets, formatters } from '@constants';
 
 const getConfiguration = (opt: Options): Config => {
   const identifier = opt.sql;

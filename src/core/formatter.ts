@@ -1,7 +1,7 @@
 import Indentation from './indentation';
 import InlineBlock from './inline-block';
-import { DbtConfig } from '../constants';
-import { Options, Token, Node } from '../types';
+import { DbtConfig } from '@constants';
+import { Options, Token, Node } from '@types';
 import * as normalize from '../utils/normalize';
 import tokenTypes from '../constants/token-types';
 import { LinkedList } from '../utils/data-structures';
