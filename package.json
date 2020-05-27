@@ -56,16 +56,23 @@
       "tsx",
       "js"
     ],
+    "moduleNameMapper": {
+      "@types": "<rootDir>/src/types",
+      "@core/(.*)": "<rootDir>/src/core/$1",
+      "@utils/(.*)": "<rootDir>/src/utils/$1",
+      "@constants/(.*)": "<rootDir>/src/constants/$1",
+      "@constants": "<rootDir>/src/constants"
+    },
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/test/"
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 25,
-        "functions": 50,
-        "lines": 50,
-        "statements": 50
+        "branches": 15,
+        "functions": 25,
+        "lines": 25,
+        "statements": 25
       }
     },
     "collectCoverageFrom": [
@@ -79,33 +86,33 @@
     "printWidth": 120
   },
   "devDependencies": {
-    "@babel/types": "^7.9.6",
+    "@babel/types": "^7.10.0",
     "@rollup/plugin-commonjs": "^12.0.0",
     "@rollup/plugin-json": "^4.0.3",
     "@rollup/plugin-node-resolve": "^8.0.0",
     "@rollup/plugin-typescript": "^3.1.1",
-    "@types/jest": "^23.3.14",
-    "@types/lodash": "^4.14.149",
-    "@types/node": "^10.17.16",
-    "jest": "^24.9.0",
-    "jest-config": "^24.9.0",
+    "@types/glob": "^7.1.1",
+    "@types/jest": "^25.2.3",
+    "@types/lodash": "^4.14.153",
+    "@types/node": "^14.0.5",
+    "jest": "^26.0.1",
+    "jest-config": "^26.0.1",
     "lodash.camelcase": "^4.3.0",
-    "prettier": "^1.19.1",
-    "rimraf": "^2.7.1",
+    "pkg": "^4.4.8",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
     "rollup": "^2.10.9",
-    "ts-jest": "^23.10.2",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.20.1",
+    "ts-jest": "^26.0.0",
+    "ts-node": "^8.10.1",
+    "tslint": "^6.1.2",
     "tslint-config-prettier": "^1.18.0",
-    "tslint-config-standard": "^8.0.1",
-    "typedoc": "^0.16.10",
-    "typescript": "^3.8.2"
+    "tslint-config-standard": "^9.0.0",
+    "typedoc": "^0.17.7",
+    "typescript": "^3.9.3"
   },
   "dependencies": {
-    "@types/glob": "^7.1.1",
-    "commander": "^4.1.1",
+    "commander": "^5.1.0",
     "glob": "^7.1.6",
-    "lodash": "^4.17.15",
-    "pkg": "^4.4.8"
+    "lodash": "^4.17.15"
   }
 }
